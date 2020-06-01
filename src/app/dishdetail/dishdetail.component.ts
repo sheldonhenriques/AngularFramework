@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Inject } from '@angular/core';
 import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Feedback, ContactType } from '../shared/feedback';
+import { Comment } from '../shared/comment';
 
 import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -20,7 +21,7 @@ export class DishdetailComponent implements OnInit {
   @ViewChild('fform') feedbackFormDirective
 
   feedbackForm: FormGroup;
-  feedback: Feedback;
+  feedback: Comment;
   contactType = ContactType;
 
     formErrors = {
@@ -47,7 +48,8 @@ export class DishdetailComponent implements OnInit {
   constructor(private dishservice: DishService,
     private route: ActivatedRoute,
     private location: Location,
-    private fb: FormBuilder) { 
+    private fb: FormBuilder,
+    @Inject('BaseURL') private BaseURL) { 
     this.createForm();
     }
 
@@ -63,7 +65,7 @@ export class DishdetailComponent implements OnInit {
       rating: ['5'],
       comment: ['', Validators.required],
       author: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)] ],
-      date: [new Date().toISOString();],
+      date: new Date().toISOString()
     });
     this.feedbackForm.valueChanges
       .subscribe(data => this.onValueChanged(data));
@@ -95,11 +97,12 @@ export class DishdetailComponent implements OnInit {
     this.feedback = this.feedbackForm.value;
     this.dish.comments.push(this.feedback);
     console.log(this.feedback);
+    this.feedbackFormDirective.resetForm();
     this.feedbackForm.reset({
       rating: '5',
       comment: '',
       author: '',
-      date: [new Date().toISOString();],
+      date: new Date().toISOString()
     });
 
   }
