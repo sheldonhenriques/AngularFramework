@@ -6,6 +6,7 @@ import { flyInOut , expand} from '../animations/app.animation';
 
 
 
+
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
@@ -28,6 +29,10 @@ export class ContactComponent implements OnInit {
   feedback: Feedback;
   contactType = ContactType;
   errMess: string;
+  submitted = null;
+  showForm = true;
+  visibility = 'shown';
+  feedbackIds: string[];
 
   formErrors = {
     'firstname': '',
@@ -65,7 +70,7 @@ export class ContactComponent implements OnInit {
   }
 
   ngOnInit() {
-
+   
   }
 
   createForm() {
@@ -107,9 +112,12 @@ export class ContactComponent implements OnInit {
   onSubmit() {
     this.feedback = this.feedbackForm.value;
     console.log(this.feedback);
+    this.showForm = false;
     this.feedbackservice.submitFeedback(this.feedback)
       .subscribe(feedback => {
-        this.feedback = feedback;
+      this.submitted = feedback;
+      this.feedback = null;
+      setTimeout(() => { this.submitted = null; this.showForm = true; }, 5000);
       },
       errmess => { this.feedback = null; this.errMess = <any>errmess; });
     this.feedbackForm.reset({

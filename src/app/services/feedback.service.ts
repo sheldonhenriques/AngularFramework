@@ -17,6 +17,23 @@ export class FeedbackService {
   constructor(private http: HttpClient,
     private processHTTPMsgService: ProcessHTTPMsgService) { }
 
+  getFeedbacks(): Observable<Feedback[]> {
+    return this.http.get<Feedback[]>(baseURL + 'feedback')
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  getFeedback(id: number): Observable<Feedback> {
+    return this.http.get<Feedback>(baseURL + 'feedback/' + id)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+
+  getFeedbackIds(): Observable<number[] | any> {
+    return this.getFeedbacks().pipe(map(feedbacks => feedbacks.map(feedback => feedback.id)))
+      .pipe(catchError(error => error));
+  }
+
+
   submitFeedback(feedback: Feedback): Observable<Feedback> {
       const httpOptions = {
       headers: new HttpHeaders({
